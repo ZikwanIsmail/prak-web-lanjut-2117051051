@@ -222,7 +222,7 @@
 
         <h1>Welcome to CodeIgniter <?= CodeIgniter\CodeIgniter::CI_VERSION ?></h1>
 
-        <h2>The small framework with powerful features</h2>
+        <h2>This Is Zikwan Ismail with npm 2117051051 class A</h2>
 
     </div>
 
