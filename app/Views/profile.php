@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Profil</title>
     <style>
         .container {
             display: flex;
@@ -40,19 +40,26 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="http://localhost/prak-web-lanjut/public/assets/image/11.jpg" alt="" class="img-fluid rounded-circle profile-image">      
-        <div class="custom-container Nama">
-            <button type="button" class="btn btn-grey">Nama : <?= $nama?></button>
-        </div>
-        <div class="custom-container Kelas">
-            <button type="button" class="btn btn-grey">Kelas : <?= $kelas?></button>
-        </div>
-        <div class="custom-container Npm">
-            <button type="button" class="btn btn-grey">Npm : <?= $npm?></button>
-        </div>
-    </div>
+    <center>
+        <br>
+        <img src="http://localhost/prak-web-lanjut1/public/assets/image/11.jpg" alt="..." style="width: 200px; border-radius: 50%;"><br>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+        <div class="badge bg-primary text-wrap" style="width: 6rem;">
+            <?= $nama ?>
+        </div>
+        <br>
+
+        <div class="badge bg-primary text-wrap" style="width: 6rem;">
+            <?= $kelas ?>
+        </div>
+        <br>
+
+        <div class="badge bg-primary text-wrap" style="width: 6rem;">
+            <?= $npm ?>
+        </div>
+        <br>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    </center>
 </body>
 </html>
