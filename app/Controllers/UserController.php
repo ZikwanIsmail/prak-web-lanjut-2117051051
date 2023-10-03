@@ -5,11 +5,11 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\KelasModel;
-use CodeIgniter\Commands\Utilities\Publish;
+
 class UserController extends BaseController
 {
-    public $userModel;
-    public $kelasModel;
+    protected $userModel;
+    protected $kelasModel;
 
     public function __construct()
     {
@@ -17,16 +17,11 @@ class UserController extends BaseController
         $this->kelasModel = new KelasModel();
     }
 
-    protected $helpers=['Form'];
+    protected $helpers = ['form'];
 
     public function index()
     {
-        $data = [
-            'title' => 'List User',
-            'users' => $this->userModel->getUser(),
-        ];
-
-        return view('list_user', $data);
+        // Kode untuk halaman index (jika ada)
     }
 
     public function profile($nama = "", $kelas = "", $npm = "")
@@ -41,9 +36,9 @@ class UserController extends BaseController
 
     public function create()
     {
-        $kelas = $this->kelasModel->getKelas();
+        $kelas = $this->kelasModel->getKelas(); // Pastikan model KelasModel bekerja dengan benar
 
-        $data =[
+        $data = [
             'kelas' => $kelas,
         ];
 
@@ -52,30 +47,20 @@ class UserController extends BaseController
 
     public function store()
     {
+        $userModel = new UserModel();
 
-        if(!$this->validate([
-            'nama' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'isi dulu bro'
-                ]
-                ],
-            'npm' => [
-                'rules' => 'required|is_unique[user.npm]',
-                'errors' => [
-                    'required' => 'isi dulu bro',
-                    'is_unique' => 'npm udah ada'
-                ]
-            ]
+        if (!$this->validate([
+            'nama' => 'required',
+            'npm' => 'required|is_unique[user.npm]',
+            'kelas' => 'required',
         ])) {
-            session()->setFlashdata('error', $this->validator->listErrors());
-            return redirect()->back()->withInput();
+            return redirect()->back()->withInput()->with('error', $this->validator->listErrors());
         }
 
-        $this ->userModel->saveUser([
-            'nama'      => $this->request->getVar('nama'),
-            'id_kelas'  => $this->request->getVar('kelas'),
-            'npm'       => $this->request->getVar('npm'),
+        $userModel->saveUser([
+            'nama' => $this->request->getVar('nama'),
+            'id_kelas' => $this->request->getVar('kelas'),
+            'npm' => $this->request->getVar('npm'),
         ]);
 
         $data = [
@@ -84,6 +69,6 @@ class UserController extends BaseController
             'kelas' => $this->request->getVar('kelas'),
         ];
 
-        return redirect()->to('/user');
+        return view('profile', $data); // Mengarahkan pengguna ke halaman profil pengguna yang baru dibuat
     }
 }

@@ -19,7 +19,7 @@ class KelasModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $updatedField  = 'updated_at'; // Nama field yang benar
     protected $deletedField  = 'deleted_at';
 
     // Validation
@@ -41,9 +41,6 @@ class KelasModel extends Model
 
     public function getKelas()
     {
-        return $this->findAll();
+        return $this->findAll(); // Mengambil semua data kelas dari tabel 'kelas'
     }
-
-
-
 }

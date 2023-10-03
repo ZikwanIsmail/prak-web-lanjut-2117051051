@@ -4,21 +4,8 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-
-
 class UserModel extends Model
 {
-
-    public function saveUser($data)
-    {
-        $this->insert($data);
-    }
-
-    public function getUser()
-    {
-        return $this->join('kelas', 'kelas.id=user.id_kelas')->findAll();
-    }
-
     protected $DBGroup          = 'default';
     protected $table            = 'user';
     protected $primaryKey       = 'id';
@@ -32,7 +19,7 @@ class UserModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $updatedField  = 'updated_at'; // Nama field yang benar
     protected $deletedField  = 'deleted_at';
 
     // Validation
@@ -52,7 +39,11 @@ class UserModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    
+    public function saveUser($data)
+    {
+        $this->insert($data);
+    }
+
+    // Tambahkan metode lain sesuai kebutuhan aplikasi Anda
+
 }
-
-
