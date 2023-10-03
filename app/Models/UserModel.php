@@ -19,7 +19,7 @@ class UserModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
-    protected $updatedField  = 'update_at';
+    protected $updatedField  = 'updated_at'; // Nama field yang benar
     protected $deletedField  = 'deleted_at';
 
     // Validation
@@ -39,7 +39,11 @@ class UserModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function saveUser($data) {
+    public function saveUser($data)
+    {
         $this->insert($data);
     }
+
+    // Tambahkan metode lain sesuai kebutuhan aplikasi Anda
+
 }

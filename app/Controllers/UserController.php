@@ -4,10 +4,20 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\UserModel;
+use App\Models\KelasModel;
 
 class UserController extends BaseController
 {
-    protected $helpers = ['Form'];
+    protected $userModel;
+    protected $kelasModel;
+
+    public function __construct()
+    {
+        $this->userModel = new UserModel();
+        $this->kelasModel = new KelasModel();
+    }
+
+    protected $helpers = ['form'];
 
     public function index()
     {
@@ -26,24 +36,7 @@ class UserController extends BaseController
 
     public function create()
     {
-        $kelas = [
-            [
-                'id' => 1, // Sesuaikan dengan id kelas pada database
-                'nama_kelas' => 'A',
-            ],
-            [
-                'id' => 2, // Sesuaikan dengan id kelas pada database
-                'nama_kelas' => 'B',
-            ],
-            [
-                'id' => 3, // Sesuaikan dengan id kelas pada database
-                'nama_kelas' => 'C',
-            ],
-            [
-                'id' => 4, // Sesuaikan dengan id kelas pada database
-                'nama_kelas' => 'D',
-            ],
-        ];
+        $kelas = $this->kelasModel->getKelas(); // Pastikan model KelasModel bekerja dengan benar
 
         $data = [
             'kelas' => $kelas,
@@ -57,28 +50,11 @@ class UserController extends BaseController
         $userModel = new UserModel();
 
         if (!$this->validate([
-            'nama' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Harap isi field Nama.',
-                ],
-            ],
-            'npm' => [
-                'rules' => 'required|is_unique[user.npm]',
-                'errors' => [
-                    'required' => 'Harap isi field NPM.',
-                    'is_unique' => 'NPM sudah ada dalam database.',
-                ],
-            ],
-            'kelas' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Harap pilih Kelas.',
-                ],
-            ],
+            'nama' => 'required',
+            'npm' => 'required|is_unique[user.npm]',
+            'kelas' => 'required',
         ])) {
-            session()->setFlashdata('error', $this->validator->listErrors());
-            return redirect()->back()->withInput();
+            return redirect()->back()->withInput()->with('error', $this->validator->listErrors());
         }
 
         $userModel->saveUser([
@@ -93,6 +69,6 @@ class UserController extends BaseController
             'kelas' => $this->request->getVar('kelas'),
         ];
 
-        return view('profile', $data);
+        return view('profile', $data); // Mengarahkan pengguna ke halaman profil pengguna yang baru dibuat
     }
 }

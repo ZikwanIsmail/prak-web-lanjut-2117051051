@@ -37,14 +37,14 @@
                 <form action="<?= base_url('/user/store')?>" method="POST">
                     <div class="mb-3">
                         <label for="nama" class="form-label">Nama:</label>
-                        <input class="form-control <?= (empty(validation_show_error('nama'))) ? '' : 'is-invalid' ?>" type="text" name="nama" id="nama" value="<?= old('nama') ?>">
-                        <div class="error-message"><?= validation_show_error('nama'); ?></div>
+                        <input class="form-control <?= (empty($validation->showError('nama'))) ? '' : 'is-invalid' ?>" type="text" name="nama" id="nama" value="<?= old('nama') ?>">
+                        <div class="error-message"><?= $validation->showError('nama'); ?></div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="npm" class="form-label">NPM:</label>
-                        <input class="form-control <?= (empty(validation_show_error('npm'))) ? '' : 'is-invalid' ?>" type="text" name="npm" id="npm" value="<?= old('npm') ?>">
-                        <div class="error-message"><?= validation_show_error('npm'); ?></div>
+                        <input class="form-control <?= (empty($validation->showError('npm'))) ? '' : 'is-invalid' ?>" type="text" name="npm" id="npm" value="<?= old('npm') ?>">
+                        <div class="error-message"><?= $validation->showError('npm'); ?></div>
                     </div>
 
                     <div class="mb-3">
