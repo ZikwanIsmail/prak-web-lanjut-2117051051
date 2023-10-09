@@ -5,12 +5,14 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\KelasModel;
+
 use CodeIgniter\Commands\Utilities\Publish;
+
 
 class UserController extends BaseController
 {
-    public $userModel;
-    public $kelasModel;
+    protected $userModel;
+    protected $kelasModel;
 
     public function __construct()
     {
@@ -18,16 +20,15 @@ class UserController extends BaseController
         $this->kelasModel = new KelasModel();
     }
 
+
     protected $helpers = ['Form'];
+
+    protected $helpers = ['form'];
+
 
     public function index()
     {
-        $data = [
-            'title' => 'List User',
-            'users' => $this->userModel->getUser(),
-        ];
-
-        return view('list_user', $data);
+        // Kode untuk halaman index (jika ada)
     }
 
     public function profile($nama = "", $kelas = "", $npm = "")
@@ -42,7 +43,7 @@ class UserController extends BaseController
 
     public function create()
     {
-        $kelas = $this->kelasModel->getKelas();
+        $kelas = $this->kelasModel->getKelas(); // Pastikan model KelasModel bekerja dengan benar
 
         $data = [
             'kelas' => $kelas,
@@ -53,6 +54,7 @@ class UserController extends BaseController
 
     public function store()
     {
+
         $path = 'assets/upload/img/';
 
         $foto = $this->request->getFile('foto');
@@ -96,6 +98,22 @@ class UserController extends BaseController
             'id_kelas' => $this->request->getPost('kelas'),
             'npm' => $this->request->getPost('npm'),
             'foto' => $fotoPath,
+
+        $userModel = new UserModel();
+
+        if (!$this->validate([
+            'nama' => 'required',
+            'npm' => 'required|is_unique[user.npm]',
+            'kelas' => 'required',
+        ])) {
+            return redirect()->back()->withInput()->with('error', $this->validator->listErrors());
+        }
+
+        $userModel->saveUser([
+            'nama' => $this->request->getVar('nama'),
+            'id_kelas' => $this->request->getVar('kelas'),
+            'npm' => $this->request->getVar('npm'),
+
         ]);
 
         return redirect()->to('/user');
@@ -112,6 +130,7 @@ class UserController extends BaseController
         return view('profile', $data);
     }
 
+
     public function delete($id)
     {
         $user = $this->userModel->find($id);
@@ -123,5 +142,8 @@ class UserController extends BaseController
         $this->userModel->delete($id);
 
         return redirect()->to('/user')->with('success', 'Data pengguna berhasil dihapus');
+
+        return view('profile', $data); // Mengarahkan pengguna ke halaman profil pengguna yang baru dibuat
+
     }
 }

@@ -8,6 +8,7 @@ class CreateUserTable extends Migration
 {
     public function up()
     {
+
         $this->forge->addField([
             'id'            => [
                 'type'          => 'INT',
@@ -39,6 +40,39 @@ class CreateUserTable extends Migration
             'deleted_at'    => [
                 'type'          => 'DATETIME',
                 'null'          => true,
+
+        $this->forge->addField  ([
+            'id' => [
+                'type'              => 'INT',
+                'constraint'        => '11',
+                'unsigned'          => true,
+                'auto_increment'    => true,
+            ],
+            'nama'            => [
+                'type'              => 'VARCHAR',
+                'constraint'        => '255',
+            ],
+            'npm'  => [
+                'type'              => 'VARCHAR',
+                'constraint'        => '10',
+            ],
+            'id_kelas'  => [
+                'type'              => 'INT',
+                'constraint'        => 5,
+                'unsigned'          => true,
+            ],
+            'created_at'  => [
+                'type'              => 'DATETIME',
+                'null'              => true,
+            ],
+            'update_at'  => [
+                'type'              => 'DATETIME',
+                'null'              => true,
+            ],
+            'delete_at'  => [
+                'type'              => 'DATETIME',
+                'null'              => true,
+
             ],
         ]);
 
@@ -49,6 +83,10 @@ class CreateUserTable extends Migration
 
     public function down()
     {
+
         $this->forge->dropTable('user', true);
+
+        $this->forge->dropTable('user', true);   
+
     }
 }
