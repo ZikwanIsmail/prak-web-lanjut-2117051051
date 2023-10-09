@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\KelasModel;
 use CodeIgniter\Commands\Utilities\Publish;
+
 class UserController extends BaseController
 {
     public $userModel;
@@ -17,7 +18,7 @@ class UserController extends BaseController
         $this->kelasModel = new KelasModel();
     }
 
-    protected $helpers=['Form'];
+    protected $helpers = ['Form'];
 
     public function index()
     {
@@ -43,7 +44,7 @@ class UserController extends BaseController
     {
         $kelas = $this->kelasModel->getKelas();
 
-        $data =[
+        $data = [
             'kelas' => $kelas,
         ];
 
@@ -52,38 +53,75 @@ class UserController extends BaseController
 
     public function store()
     {
+        $path = 'assets/upload/img/';
 
-        if(!$this->validate([
+        $foto = $this->request->getFile('foto');
+
+        if ($foto->isValid() && !$foto->hasMoved()) {
+            $allowedTypes = ['jpg', 'png', 'jpeg', 'gif']; // Jenis file gambar yang diizinkan
+            if (in_array($foto->getClientExtension(), $allowedTypes)) {
+                $name = $foto->getRandomName();
+                $foto->move($path, $name);
+
+                $fotoPath = base_url($path . $name);
+            } else {
+                $fotoPath = ''; // Set default path jika jenis file tidak valid
+            }
+        } else {
+            $fotoPath = ''; // Set default path jika tidak ada foto yang diunggah atau terjadi kesalahan.
+        }
+
+        $rules = [
+            'nama' => 'required',
+            'npm' => 'required|is_unique[user.npm]',
+        ];
+
+        $errors = [
             'nama' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'isi dulu bro'
-                ]
-                ],
+                'required' => 'Isi dulu bro.',
+            ],
             'npm' => [
-                'rules' => 'required|is_unique[user.npm]',
-                'errors' => [
-                    'required' => 'isi dulu bro',
-                    'is_unique' => 'npm udah ada'
-                ]
-            ]
-        ])) {
+                'required' => 'Isi dulu bro.',
+                'is_unique' => 'NPM sudah ada.',
+            ],
+        ];
+
+        if (!$this->validate($rules, $errors)) {
             session()->setFlashdata('error', $this->validator->listErrors());
             return redirect()->back()->withInput();
         }
 
-        $this ->userModel->saveUser([
-            'nama'      => $this->request->getVar('nama'),
-            'id_kelas'  => $this->request->getVar('kelas'),
-            'npm'       => $this->request->getVar('npm'),
+        $this->userModel->saveUser([
+            'nama' => $this->request->getPost('nama'),
+            'id_kelas' => $this->request->getPost('kelas'),
+            'npm' => $this->request->getPost('npm'),
+            'foto' => $fotoPath,
         ]);
 
-        $data = [
-            'nama' => $this->request->getVar('nama'),
-            'npm' => $this->request->getVar('npm'),
-            'kelas' => $this->request->getVar('kelas'),
-        ];
-
         return redirect()->to('/user');
+    }
+
+    public function show($id)
+    {
+        $user = $this->userModel->getUser($id);
+
+        $data = [
+            'title' => 'Profile',
+            'user' => $user,
+        ];
+        return view('profile', $data);
+    }
+
+    public function delete($id)
+    {
+        $user = $this->userModel->find($id);
+
+        if (!$user) {
+            return redirect()->to('/user')->with('error', 'Data pengguna tidak ditemukan');
+        }
+
+        $this->userModel->delete($id);
+
+        return redirect()->to('/user')->with('success', 'Data pengguna berhasil dihapus');
     }
 }

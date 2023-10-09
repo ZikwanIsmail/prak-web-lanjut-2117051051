@@ -15,3 +15,5 @@ $routes->get('/user/profile/(:any)/(:any)/(:any)', [UserController::class, 'prof
 $routes-> get('/user/create', [UserController::class, 'create']);
 $routes-> get('/user', [UserController::class, 'index']);
 $routes-> post('/user/store', [UserController::class, 'store']);
+$routes-> get('user/(:any)', [UserController::class, 'show']);
+$routes->post('/user/delete/(:num)', 'UserController::delete/$1');

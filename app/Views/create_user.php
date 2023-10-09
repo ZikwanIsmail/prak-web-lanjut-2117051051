@@ -2,42 +2,40 @@
 
 <?= $this->section('content') ?>
 
-    <center>
-    <p>Ini Halaman Create User</p>
-    <?php $validation = \Config\Services::validation();?>
+<div class="container">
+    <h1 class="mt-4 mb-4">Halaman Tambah Pengguna</h1>
 
-    <form action="<?= base_url('/user/store')?>" method="POST">
-        <label for="">Nama : </label>
-        
-        <input class="form-control <?= (empty(validation_show_error('nama'))) ? '' : 'is-invalid' ?>" type="text" placeholder="Default input" aria-label="default input example" type="text" name="nama" id="" style="width: 20%" value="<?= old('nama') ?>">
-        <?= validation_show_error('nama'); ?>
-        <br>
-        <br>
-        
-        <label for="">NPM  : </label>
-        <input class="form-control <?= (empty(validation_show_error('npm'))) ? '' : 'is-invalid' ?>" type="text" placeholder="Default input" aria-label="default input example" ty///pe="text" name="npm" id="" style="width: 20%" value="<?= old('nama') ?>">
-        <?= validation_show_error('npm'); ?>
-        <br>
-        <br>
-        
-        <label for="">Kelas : </label>
-        <select name="kelas" id="kelas">
-            <?php
-            foreach ($kelas as $item){
-            ?>
-                <option value="<?= $item['id']?>">
-                    <?= $item['nama_kelas'] ?>
-                </option>
-            <?php
-            }
-            ?>
-        </select>
-        <!-- <input class="form-control" type="text" placeholder="Default input" aria-label="default input example" type="text" name="kelas" id="" style="width: 20%"> -->
-        <br>
-        
-        <button type="submit" class="btn btn-secondary" >Submit</button>
+    <form action="<?= base_url('/user/store') ?>" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="foto" class="form-label">Foto</label>
+            <input class="form-control" name="foto" type="file" id="foto" style="width: 20%">
+        </div>
+
+        <div class="mb-3">
+            <label for="nama" class="form-label">Nama</label>
+            <input class="form-control <?= (empty(validation_show_error('nama'))) ? '' : 'is-invalid' ?>" type="text" name="nama" id="nama" style="width: 20%" value="<?= old('nama') ?>">
+            <?= validation_show_error('nama'); ?>
+        </div>
+
+        <div class="mb-3">
+            <label for="npm" class="form-label">NPM</label>
+            <input class="form-control <?= (empty(validation_show_error('npm'))) ? '' : 'is-invalid' ?>" type="text" name="npm" id="npm" style="width: 20%" value="<?= old('npm') ?>">
+            <?= validation_show_error('npm'); ?>
+        </div>
+
+        <div class="mb-3">
+            <label for="kelas" class="form-label">Kelas</label>
+            <select name="kelas" id="kelas" class="form-select">
+                <?php foreach ($kelas as $item) { ?>
+                    <option value="<?= $item['id'] ?>">
+                        <?= $item['nama_kelas'] ?>
+                    </option>
+                <?php } ?>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    </center>
-    <?= $this->endsection() ?>
+<?= $this->endsection() ?>
