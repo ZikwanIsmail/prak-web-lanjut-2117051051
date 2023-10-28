@@ -5,14 +5,11 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\KelasModel;
-
 use CodeIgniter\Commands\Utilities\Publish;
-
-
 class UserController extends BaseController
 {
-    protected $userModel;
-    protected $kelasModel;
+    public $userModel;
+    public $kelasModel;
 
     public function __construct()
     {
@@ -20,15 +17,16 @@ class UserController extends BaseController
         $this->kelasModel = new KelasModel();
     }
 
-
-    protected $helpers = ['Form'];
-
-    protected $helpers = ['form'];
-
+    protected $helpers=['Form'];
 
     public function index()
     {
-        // Kode untuk halaman index (jika ada)
+        $data = [
+            'title' => 'List User',
+            'users' => $this->userModel->getUser(),
+        ];
+
+        return view('list_user', $data);
     }
 
     public function profile($nama = "", $kelas = "", $npm = "")
@@ -43,9 +41,9 @@ class UserController extends BaseController
 
     public function create()
     {
-        $kelas = $this->kelasModel->getKelas(); // Pastikan model KelasModel bekerja dengan benar
+        $kelas = $this->kelasModel->getKelas();
 
-        $data = [
+        $data =[
             'kelas' => $kelas,
         ];
 
@@ -59,64 +57,47 @@ class UserController extends BaseController
 
         $foto = $this->request->getFile('foto');
 
-        if ($foto->isValid() && !$foto->hasMoved()) {
-            $allowedTypes = ['jpg', 'png', 'jpeg', 'gif']; // Jenis file gambar yang diizinkan
-            if (in_array($foto->getClientExtension(), $allowedTypes)) {
-                $name = $foto->getRandomName();
-                $foto->move($path, $name);
+        $name = $foto->getRandomName();
 
-                $fotoPath = base_url($path . $name);
-            } else {
-                $fotoPath = ''; // Set default path jika jenis file tidak valid
-            }
-        } else {
-            $fotoPath = ''; // Set default path jika tidak ada foto yang diunggah atau terjadi kesalahan.
-        }
-
-        $rules = [
-            'nama' => 'required',
-            'npm' => 'required|is_unique[user.npm]',
-        ];
-
-        $errors = [
+        if(!$this->validate([
             'nama' => [
-                'required' => 'Isi dulu bro.',
-            ],
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'isi dulu bro'
+                ]
+                ],
             'npm' => [
-                'required' => 'Isi dulu bro.',
-                'is_unique' => 'NPM sudah ada.',
-            ],
-        ];
-
-        if (!$this->validate($rules, $errors)) {
+                'rules' => 'required|is_unique[user.npm]',
+                'errors' => [
+                    'required' => 'isi dulu bro',
+                    'is_unique' => 'npm udah ada'
+                ]
+            ]
+        ])) {
             session()->setFlashdata('error', $this->validator->listErrors());
             return redirect()->back()->withInput();
         }
 
-        $this->userModel->saveUser([
-            'nama' => $this->request->getPost('nama'),
-            'id_kelas' => $this->request->getPost('kelas'),
-            'npm' => $this->request->getPost('npm'),
-            'foto' => $fotoPath,
-
-        $userModel = new UserModel();
-
-        if (!$this->validate([
-            'nama' => 'required',
-            'npm' => 'required|is_unique[user.npm]',
-            'kelas' => 'required',
-        ])) {
-            return redirect()->back()->withInput()->with('error', $this->validator->listErrors());
+        if($foto->move($path, $name))
+        {
+            $foto = base_url($path. $name);
         }
 
-        $userModel->saveUser([
-            'nama' => $this->request->getVar('nama'),
-            'id_kelas' => $this->request->getVar('kelas'),
-            'npm' => $this->request->getVar('npm'),
-
+        $this ->userModel->saveUser([
+            'nama'      => $this->request->getVar('nama'),
+            'id_kelas'  => $this->request->getVar('kelas'),
+            'npm'       => $this->request->getVar('npm'),
+            'foto'      => $foto,
         ]);
 
+        $data = [
+            'nama' => $this->request->getVar('nama'),
+            'npm' => $this->request->getVar('npm'),
+            'kelas' => $this->request->getVar('kelas'),
+        ];
+
         return redirect()->to('/user');
+
     }
 
     public function show($id)
@@ -125,25 +106,59 @@ class UserController extends BaseController
 
         $data = [
             'title' => 'Profile',
-            'user' => $user,
+            'user'  => $user
         ];
         return view('profile', $data);
     }
 
-
-    public function delete($id)
+    public function edit($id)
     {
-        $user = $this->userModel->find($id);
+        $user   = $this->userModel->getUser($id);
+        $kelas  = $this->kelasModel->getKelas();
 
-        if (!$user) {
-            return redirect()->to('/user')->with('error', 'Data pengguna tidak ditemukan');
+        $data = [
+            'title' => 'Edit User',
+            'user'  => $user,
+            'kelas' => $kelas,
+        ];
+        return view('edit_user', $data);
+    }
+
+    public function update($id){
+        $path = 'assets/uploads/img/';
+        $foto = $this->request->getFile('foto');
+        
+        $data = [
+            'nama'      => $this->request->getVar('nama'),
+            'id_kelas'  => $this->request->getVar('kelas'),
+            'npm'       => $this->request->getVar('npm'),
+        ];
+
+        if($foto->isValid()){
+            $name = $foto->getRandomName();
+
+            if($foto->move($path, $name)){
+                $foto_path = base_url($path . $name);
+                $data['foto'] = $foto_path;
+            }
         }
 
-        $this->userModel->delete($id);
+        $result = $this->userModel->updateUser($data, $id);
 
-        return redirect()->to('/user')->with('success', 'Data pengguna berhasil dihapus');
+        if(!$result){
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal Menyimpan data');
+        }
 
-        return view('profile', $data); // Mengarahkan pengguna ke halaman profil pengguna yang baru dibuat
+        return redirect()->to(base_url('/user'));
+    }
 
+    public function destroy($id){
+        $result = $this->userModel->deleteUser($id);
+        if(!$result){
+            return redirect()->back()->with('error', 'Gagal menghapus data');
+        }
+        return redirect()->to(base_url('/user'))
+            ->with('success', 'Berhasil menghapus data');
     }
 }
