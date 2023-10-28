@@ -19,7 +19,7 @@ class KelasModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at'; // Nama field yang benar
+    protected $updatedField  = 'update_at'; 
     protected $deletedField  = 'deleted_at';
 
     // Validation
@@ -39,8 +39,25 @@ class KelasModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function getKelas()
+    public function getKelas($id = null)
     {
-        return $this->findAll(); // Mengambil semua data kelas dari tabel 'kelas'
+        if ($id !== null)
+        {
+            return $this->where('id', $id)->first();
+        }
+        return $this->findAll();
+    }
+
+    public function saveKelas($data)
+    {
+         $this->insert($data);
+    }
+
+    public function updateKelas($data, $id){
+        return $this->update($id, $data);
+    }
+
+    public function deleteKelas($id){
+        return $this->delete($id);
     }
 }
